@@ -3,18 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FBI System</title>
-
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
+    <title>FBI System - Pablo Troncoso</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
   </head>
   <body>
-      <h1>&#128374; FBI System &#128374;</h1>
+    <h1>&#128374; FBI System &#128374;</h1>
     <div class="card bg-dark text-center">
       <div class="card-body">
-        <form action="/SignIn">
+        <form id="loginForm">
           <h1>&#128372;&#128372;&#128372;</h1>
           <h5 class="card-title text-center">Ingrese sus credenciales</h5>
           <div class="row d-flex align-items-center mb-1">
@@ -23,9 +19,9 @@
           </div>
           <div class="row d-flex align-items-center">
             <div class="col-12">Password:</div>
-            <div class="col-7 m-auto"><input type="text" name="password" class="form-control" /></div>
+            <div class="col-7 m-auto"><input type="password" name="password" class="form-control" /></div>
           </div>
-          <button class="btn bg-light my-3">Ingresar &#128373;</button>
+          <button type="submit" class="btn bg-light my-3">Ingresar &#128373;</button>
         </form>
       </div>
     </div>
@@ -45,5 +41,35 @@
         height: 60vh;
       }
     </style>
+
+    <script>
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          sessionStorage.setItem('token', result.token);
+          document.body.innerHTML = `
+            <div class="container text-center mt-5">
+              <h1>Bienvenido, ${data.email}</h1>
+              <a href="/restricted-route">Ir a la ruta restringida</a>
+            </div>
+          `;
+        } else {
+          alert('Credenciales incorrectas');
+        }
+      });
+    </script>
   </body>
 </html>
